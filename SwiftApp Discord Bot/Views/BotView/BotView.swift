@@ -1,0 +1,34 @@
+//
+//  BotView.swift
+//  DiscordApp_Demo
+//
+//  Created by Campus Heilbronn on 13.04.25.
+//
+
+import SwiftData
+import SwiftUI
+
+struct BotView: View {
+    @Bindable var bot: Bot
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                // Header Info
+                HeaderView(bot: bot)
+
+                // Commands Section
+                CommandsView(bot: bot)
+            }
+            .padding()
+        }
+        .background(Color.tumGray9)
+    }
+}
+
+#Preview {
+    NavigationStack {
+        BotView(bot: SampleData.shared.bot)
+            .modelContainer(SampleData.shared.modelContainer)
+    }
+}
