@@ -48,12 +48,14 @@ struct HeaderView: View {
                             Text(bot.isActive ? "Active" : "InActive")
                                 .foregroundColor(bot.isActive ? .tumGreen : .tumGray4)
                                 .font(.subheadline)
+                                .accessibilityIdentifier("botStatusIndicator")
                             Circle()
                                 .foregroundColor(isServerActive ? .tumGreen : .tumOrange)
                                 .frame(width: 10, height: 10)
                             Text(isServerActive ? "Server Online" : "Server Offline")
                                 .foregroundColor(isServerActive ? .tumGreen : .tumOrange)
                                 .font(.subheadline)
+                                .accessibilityIdentifier("serverStatusIndicator")
                         }
 
                         // Debug Info
@@ -75,6 +77,7 @@ struct HeaderView: View {
                         .font(.title)
                         .foregroundColor(.tumBlue)
                 }
+                .accessibilityIdentifier("settings")
                 .sheet(isPresented: $showSettings) {
                     SettingsView(bot: bot.self)
                         .presentationDetents([.medium, .large])
@@ -187,6 +190,7 @@ struct HeaderView: View {
             .background(Color.tumRed)
             .foregroundColor(.white)
             .cornerRadius(10)
+            .accessibilityIdentifier("deleteBotButton")
             .onReceive(timer) { _ in
                 counter += 1
                 updateStatus()
@@ -201,34 +205,18 @@ struct HeaderView: View {
                 }
             } label: {
                 HStack {
-                    if isLoadingBotAction {
-                        HStack(spacing: 6) {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(0.35)
-                                .frame(width: 10, height: 10)
-                            
-                            Text("Loading...")
-                                .font(.subheadline)
-                        }
-                    } else {
-                        HStack(spacing: 6) {
-                            Image(systemName: bot.isActive ? "stop.fill" : "play.fill")
-                                .font(.subheadline)
-                            
-                            Text(bot.isActive ? "Stop Bot" : "Start Bot")
-                                .font(.subheadline)
-                        }
-                    }
+                    Image(systemName: bot.isActive ? "stop.fill" : "play.fill")
+                    Text(bot.isActive ? "Stop Bot" : "Start Bot")
                 }
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
-            .background(isLoadingBotAction ? Color.tumGray4 : (bot.isActive ? Color.tumRed : Color.tumGreen))
+            .background(bot.isActive ? Color.tumRed : Color.tumGreen)
             .foregroundColor(.white)
             .cornerRadius(10)
-            .disabled(isLoadingBotAction || !isServerActive)
+            .disabled(!isServerActive || isLoadingBotAction)
+            .accessibilityIdentifier(bot.isActive ? "stopBotButton" : "startBotButton")
         }
         .frame(width: horizontalSizeClass == .regular ? 200 : 150)
     }

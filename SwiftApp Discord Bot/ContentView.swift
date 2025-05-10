@@ -10,10 +10,12 @@ struct ContentView: View {
             VStack {
                 if let bot = bots.first {
                     BotView(bot: bot)
+                        .accessibilityIdentifier("botMainView")
                 } else {
                     ContentUnavailableView {
                         Label("No Bot Available", systemImage: "exclamationmark.triangle")
                             .foregroundColor(.tumOrange)
+                            .accessibilityIdentifier("emptyStateLabel")
                     } actions: {
                         Button("Create Bot") {
                             createBot()
@@ -22,9 +24,11 @@ struct ContentView: View {
                         .padding()
                         .background(Color.tumGray8)
                         .cornerRadius(8)
+                        .accessibilityIdentifier("Create Bot")
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.tumGray9)
+                    .accessibilityIdentifier("emptyStateView")
                 }
             }
         }

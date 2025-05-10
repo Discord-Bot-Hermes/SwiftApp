@@ -14,8 +14,10 @@ struct BotView: View {
                 CommandsView(bot: bot)
             }
             .padding()
+            .accessibilityIdentifier("botMainContent")
         }
         .background(Color.tumGray9)
+        .accessibilityIdentifier("botMainView")
     }
 }
 

@@ -125,11 +125,13 @@ struct SettingsView: View {
                                 .textInputAutocapitalization(.never)
                                 .autocorrectionDisabled()
                                 .font(.body)
+                                .accessibilityIdentifier("serverIPField")
 
                             TextField("API Key", text: $apiKey)
                                 .textInputAutocapitalization(.never)
                                 .autocorrectionDisabled()
                                 .font(.body)
+                                .accessibilityIdentifier("apiKeyField")
                             
                             Button("Save Server Settings") {
                                 saveServerSettings()
@@ -137,6 +139,7 @@ struct SettingsView: View {
                             }
                             .frame(maxWidth: .infinity, alignment: .center)
                             .foregroundColor(Color.tumBlue)
+                            .accessibilityIdentifier("saveServerSettingsButton")
                         } else {
                             HStack {
                                 Text("Server IP")
@@ -144,6 +147,7 @@ struct SettingsView: View {
                                 Spacer()
                                 Text(serverIP)
                                     .foregroundColor(.primary)
+                                    .accessibilityIdentifier("serverIPValue")
                             }
 
                             HStack {
@@ -152,6 +156,7 @@ struct SettingsView: View {
                                 Spacer()
                                 Text(apiKey)
                                     .foregroundColor(.primary)
+                                    .accessibilityIdentifier("apiKeyValue")
                             }
                             
                             Button("Edit Server Settings") {
@@ -159,6 +164,7 @@ struct SettingsView: View {
                             }
                             .frame(maxWidth: .infinity, alignment: .center)
                             .foregroundColor(Color.tumBlue)
+                            .accessibilityIdentifier("editServerSettingsButton")
                         }
                     }
                     
@@ -340,6 +346,7 @@ struct SettingsView: View {
                 }
                 .navigationTitle("Settings")
                 .navigationBarTitleDisplayMode(.inline)
+                .accessibilityIdentifier("settingsView")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Done") {
@@ -349,6 +356,7 @@ struct SettingsView: View {
                                 dismiss()
                             }
                         }
+                        .accessibilityIdentifier("doneButton")
                         .confirmationDialog(
                             "Are you sure you want to discard your changes?",
                             isPresented: $showConfirmationDialog,
