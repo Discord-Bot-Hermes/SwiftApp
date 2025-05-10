@@ -1,10 +1,3 @@
-//
-//  DiscordApp_DemoApp.swift
-//  DiscordApp_Demo
-//
-//  Created by Campus Heilbronn on 19.03.25.
-//
-
 import SwiftUI
 
 @main

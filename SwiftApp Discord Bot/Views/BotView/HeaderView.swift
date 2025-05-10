@@ -5,6 +5,7 @@ struct HeaderView: View {
     @Bindable var bot: Bot
     @Environment(\.modelContext) private var context
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dismiss) private var dismiss
 
     @State private var showSettings = false
     @State private var isServerActive = false
@@ -16,7 +17,7 @@ struct HeaderView: View {
     @State private var serverResponseMessage = ""
     @State private var showServerResponseMessage = false
     @State private var isMessageSuccess = false
-    @State private var refreshButtonScale: CGFloat = 1.0
+    @State private var showDeleteConfirmation = false
 
     let timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
@@ -109,6 +110,14 @@ struct HeaderView: View {
         .onAppear {
             updateStatus()
         }
+        .alert("Delete Bot", isPresented: $showDeleteConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                deleteBot()
+            }
+        } message: {
+            Text("Are you sure you want to delete this bot? This action cannot be undone.")
+        }
     }
     
     // Server Stats View
@@ -163,29 +172,19 @@ struct HeaderView: View {
     // Controls View
     private var controlsView: some View {
         VStack(spacing: 16) {
-            // Refresh button
+            // Delete button
             Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    refreshButtonScale = 0.9
-                    updateStatus()
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            refreshButtonScale = 1.0
-                        }
-                    }
-                }
+                showDeleteConfirmation = true
             } label: {
                 HStack {
-                    Image(systemName: "arrow.clockwise")
-                        .scaleEffect(refreshButtonScale)
-                    Text("Refresh")
+                    Image(systemName: "trash")
+                    Text("Delete Bot")
                 }
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
-            .background(Color.tumOrange)
+            .background(Color.tumRed)
             .foregroundColor(.white)
             .cornerRadius(10)
             .onReceive(timer) { _ in
@@ -232,6 +231,50 @@ struct HeaderView: View {
             .disabled(isLoadingBotAction || !isServerActive)
         }
         .frame(width: horizontalSizeClass == .regular ? 200 : 150)
+    }
+    
+    private func deleteBot() {
+        if !bot.isActive {
+            context.delete(bot)
+            try? context.save()
+        } else {
+            // If the bot is active, stop it first, then delete
+            stopAndDeleteBot()
+        }
+    }
+    
+    private func stopAndDeleteBot() {
+        // Set loading state
+        isLoadingBotAction = true
+        
+        Task {
+            do {
+                // Create URL for the request
+                guard let url = URL(string: "\(bot.apiClient?.serverIP ?? "")/api/stop-bot?api_key=\(bot.apiClient?.apiKey ?? "")") else {
+                    throw URLError(.badURL)
+                }
+                
+                var request = URLRequest(url: url)
+                request.httpMethod = "POST"
+                
+                // Try to stop the bot first
+                let (_, _) = try await URLSession.shared.data(for: request)
+                
+                // Once stopped (or even if it fails), delete the bot
+                DispatchQueue.main.async {
+                    isLoadingBotAction = false
+                    context.delete(bot)
+                    try? context.save()
+                }
+            } catch {
+                // If there's an error stopping the bot, still delete it
+                DispatchQueue.main.async {
+                    isLoadingBotAction = false
+                    context.delete(bot)
+                    try? context.save()
+                }
+            }
+        }
     }
     
     private func startBot() {

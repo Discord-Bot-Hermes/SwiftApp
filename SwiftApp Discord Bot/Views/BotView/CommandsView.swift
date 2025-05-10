@@ -1,10 +1,4 @@
 import SwiftData
-//
-//  CommandsView.swift
-//  DiscordApp_Demo
-//
-//  Created by Campus Heilbronn on 15.04.25.
-//
 import SwiftUI
 
 struct CommandsView: View {
