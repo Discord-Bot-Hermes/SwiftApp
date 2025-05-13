@@ -21,7 +21,7 @@ struct HelloCommandView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Hello Command")) {
+            Section(header: Text("Send Command")) {
                 if isLoading {
                     HStack {
                         Spacer()
