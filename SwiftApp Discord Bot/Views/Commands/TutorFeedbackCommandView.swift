@@ -495,7 +495,7 @@ struct TutorFeedbackCommandView: View {
                                         .foregroundColor(.secondary)
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                             .padding(.vertical, 12)
                             .padding(.horizontal, 16)
                             .background(Color(.systemGray6))
@@ -517,7 +517,7 @@ struct TutorFeedbackCommandView: View {
                             .listRowSeparator(.hidden)
                         }
                     }
-                    .frame(maxWidth: .infinity, minHeight: 200)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                     .listStyle(PlainListStyle())
                     .background(Color(.white))
                     .cornerRadius(10)

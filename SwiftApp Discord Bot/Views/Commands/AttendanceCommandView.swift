@@ -61,6 +61,7 @@ struct AttendanceCommandView: View {
     @State private var showDetails = false
     @State private var isDetailDataLoading = false
     @State private var loadedAttendees: [AttendanceEntry] = []
+    @State private var attendanceCode: String = ""  // New state for attendance code
 
     // Added state for members
     @State private var members: [Member] = []
@@ -168,7 +169,7 @@ struct AttendanceCommandView: View {
                             selectedGroupId == nil || isProcessing
                                 || selectedMemberId == nil
                         )
-                        
+
                         if selectedGroupId != nil {
                             HStack {
                                 Text("Current Status:")
@@ -179,6 +180,20 @@ struct AttendanceCommandView: View {
                                     )
                             }
                         }
+
+                        // New attendance code field
+                        HStack {
+                            Text("Attendance Code")
+                            Spacer()
+                            TextField("Enter code", text: $attendanceCode)
+                                .keyboardType(.numberPad)
+                                .disabled(isAttendanceActive)
+                                .opacity(isAttendanceActive ? 0.6 : 1.0)
+                                .textFieldStyle(.plain)
+                                .frame(width: 100)
+                                .multilineTextAlignment(.trailing)
+                        }
+                        .padding(.vertical, 8)
                     }
 
                     Button(
@@ -194,6 +209,7 @@ struct AttendanceCommandView: View {
                             || selectedMemberId == nil
                             || (attendanceStatus && isAttendanceActive)
                             || (!attendanceStatus && !isAttendanceActive)
+                            || attendanceCode.isEmpty
                     )
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 5)
@@ -232,92 +248,6 @@ struct AttendanceCommandView: View {
                 }
             }
 
-            Section(header: Text("Attendance Files")) {
-                if isFilesLoading {
-                    HStack {
-                        Spacer()
-                        ProgressView()
-                            .padding()
-                        Spacer()
-                    }
-                } else if attendanceFiles.isEmpty {
-                    Text("No attendance files available")
-                        .foregroundColor(.gray)
-                        .font(.caption)
-                } else {
-                    List {
-                        ForEach(attendanceFiles) { file in
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Text(extractGroupName(from: file.name))
-                                        .font(.headline)
-
-                                    Spacer()
-
-                                    if loadingFiles.contains(file.name) {
-                                        ProgressView()
-                                            .scaleEffect(0.8)
-                                    } else {
-                                        Text(
-                                            "\(attendanceCounts[file.name] ?? 0) attendees"
-                                        )
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    }
-                                }
-
-                                if let formattedDate = formatDate(
-                                    from: file.name
-                                ) {
-                                    Text(formattedDate)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 16)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(8)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color(.systemGray4), lineWidth: 1)
-                            )
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                loadAttendanceDetails(for: file)
-                            }
-                            .onAppear {
-                                loadAttendanceCount(for: file.name)
-                            }
-                            .listRowSeparator(.hidden)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, minHeight: 200)
-                    .listStyle(PlainListStyle())
-                    .background(Color(.white))
-                    .cornerRadius(10)
-                    .padding(.vertical, 8)
-                }
-
-                if isDetailDataLoading {
-                    HStack {
-                        Spacer()
-                        VStack {
-                            ProgressView()
-                            Text("Loading attendance data...")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .padding(.top, 4)
-                        }
-                        Spacer()
-                    }
-                    .padding()
-                }
-            }
-            .listRowInsets(
-                EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16)
-            )
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Attendance")
@@ -355,6 +285,94 @@ struct AttendanceCommandView: View {
             loadAttendanceFiles()
             loadMembers()
         }
+
+        Section(header: Text("Attendance Files").font(.headline)) {
+            if isFilesLoading {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .padding()
+                    Spacer()
+                }
+            } else if attendanceFiles.isEmpty {
+                Text("No attendance files available")
+                    .foregroundColor(.gray)
+                    .font(.caption)
+            } else {
+                List {
+                    ForEach(attendanceFiles) { file in
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text(extractGroupName(from: file.name))
+                                    .font(.headline)
+
+                                Spacer()
+
+                                if loadingFiles.contains(file.name) {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Text(
+                                        "\(attendanceCounts[file.name] ?? 0) attendees"
+                                    )
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                }
+                            }
+
+                            if let formattedDate = formatDate(
+                                from: file.name
+                            ) {
+                                Text(formattedDate)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color(.systemGray4), lineWidth: 1)
+                        )
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            loadAttendanceDetails(for: file)
+                        }
+                        .onAppear {
+                            loadAttendanceCount(for: file.name)
+                        }
+                        .listRowSeparator(.hidden)
+                    }
+                }
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: .leading
+                )
+                .listStyle(PlainListStyle())
+                .background(Color(.white))
+                .cornerRadius(10)
+                .padding(.vertical, 8)
+            }
+
+            if isDetailDataLoading {
+                HStack {
+                    Spacer()
+                    VStack {
+                        ProgressView()
+                        Text("Loading attendance data...")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
+                    }
+                    Spacer()
+                }
+                .padding()
+            }
+        }
     }
 
     private func manageAttendance() {
@@ -366,6 +384,12 @@ struct AttendanceCommandView: View {
 
         guard let memberId = selectedMemberId else {
             errorMessage = "Please select an admin member."
+            showFeedback = true
+            return
+        }
+
+        guard !attendanceCode.isEmpty else {
+            errorMessage = "Please enter an attendance code."
             showFeedback = true
             return
         }
@@ -386,10 +410,12 @@ struct AttendanceCommandView: View {
         showFeedback = false
 
         Task {
+            // Call the API client with the updated parameters
             let result = await bot.apiClient.manageAttendance(
                 groupId: groupId,
                 targetUserId: memberId,
-                status: attendanceStatus
+                status: attendanceStatus,
+                code: attendanceCode
             )
 
             DispatchQueue.main.async {
@@ -405,6 +431,11 @@ struct AttendanceCommandView: View {
                         group: group,
                         isActive: attendanceStatus
                     )
+
+                    // Clear the code if stopping attendance
+                    if !attendanceStatus {
+                        attendanceCode = ""
+                    }
 
                 case .failure(let message):
                     errorMessage = message

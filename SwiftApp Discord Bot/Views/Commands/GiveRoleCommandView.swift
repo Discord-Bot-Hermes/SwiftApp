@@ -45,7 +45,6 @@ struct GiveRoleCommandView: View {
                             HStack {
                                 // Create a color indicator from the hex color string
                                 Circle()
-                                    .fill(Color(hex: role.color) ?? .gray)
                                     .frame(width: 12, height: 12)
                                 Text(role.name)
                             }

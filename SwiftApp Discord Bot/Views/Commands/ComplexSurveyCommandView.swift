@@ -53,7 +53,7 @@ struct ComplexSurveyDetailsView: View {
                             }
                         }
                     }
-                    .frame(maxWidth: .infinity, minHeight: 200)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                     .listStyle(PlainListStyle())
                     .background(Color(.white))
                     .cornerRadius(10)
@@ -835,7 +835,7 @@ struct ComplexSurveyCommandView: View {
                                 .listRowSeparator(.hidden)
                             }
                         }
-                        .frame(maxWidth: .infinity, minHeight: 200)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                         .listStyle(PlainListStyle())
                         .background(Color(.white))
                         .cornerRadius(10)

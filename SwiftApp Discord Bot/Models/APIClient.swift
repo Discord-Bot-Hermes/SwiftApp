@@ -574,7 +574,7 @@ class APIClient {
         }
     }
 
-    func manageAttendance(groupId: String, targetUserId: String, status: Bool) async -> AttendanceResult {
+    func manageAttendance(groupId: String, targetUserId: String, status: Bool, code: String) async -> AttendanceResult {
         // Build URL with parameters
         let statusString = status ? "start" : "stop"
         var urlComponents = URLComponents(string: "\(serverIP)/api/attendance")
@@ -582,6 +582,7 @@ class APIClient {
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "status", value: statusString),
             URLQueryItem(name: "target_user_id", value: targetUserId),
+            URLQueryItem(name: "code", value: code),
             URLQueryItem(name: "group_id", value: groupId.lowercased())
         ]
         
@@ -592,7 +593,7 @@ class APIClient {
             return .failure(message: "Invalid URL")
         }
         
-        print("DEBUG: APIClient \(statusString)ing attendance for group \(groupId)")
+        print("DEBUG: APIClient \(statusString)ing attendance for group \(groupId) with code \(code)")
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
