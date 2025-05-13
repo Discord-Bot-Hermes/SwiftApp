@@ -247,7 +247,94 @@ struct AttendanceCommandView: View {
                     )
                 }
             }
+            Section(header: Text("Attendance History")) {
+                if isFilesLoading {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .padding()
+                        Spacer()
+                    }
+                } else if attendanceFiles.isEmpty {
+                    Text("No attendance files available")
+                        .foregroundColor(.gray)
+                        .font(.caption)
+                } else {
+                    List {
+                        ForEach(attendanceFiles) { file in
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(extractGroupName(from: file.name))
+                                        .font(.headline)
 
+                                    Spacer()
+
+                                    if loadingFiles.contains(file.name) {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                    } else {
+                                        Text(
+                                            "\(attendanceCounts[file.name] ?? 0) attendees"
+                                        )
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    }
+                                }
+
+                                if let formattedDate = formatDate(
+                                    from: file.name
+                                ) {
+                                    Text(formattedDate)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color(.systemGray4), lineWidth: 1)
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                loadAttendanceDetails(for: file)
+                            }
+                            .onAppear {
+                                loadAttendanceCount(for: file.name)
+                            }
+                            .listRowSeparator(.hidden)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 500)
+                    .frame(
+                        maxWidth: .infinity,
+                        maxHeight: .infinity,
+                        alignment: .leading
+                    )
+                    .listStyle(PlainListStyle())
+                    .background(Color(.white))
+                    .cornerRadius(10)
+                    .padding(.vertical, 8)
+                }
+
+                if isDetailDataLoading {
+                    HStack {
+                        Spacer()
+                        VStack {
+                            ProgressView()
+                            Text("Loading attendance data...")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.top, 4)
+                        }
+                        Spacer()
+                    }
+                    .padding()
+                }
+            }
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Attendance")
@@ -284,94 +371,6 @@ struct AttendanceCommandView: View {
         .refreshable {
             loadAttendanceFiles()
             loadMembers()
-        }
-
-        Section(header: Text("Attendance Files").font(.headline)) {
-            if isFilesLoading {
-                HStack {
-                    Spacer()
-                    ProgressView()
-                        .padding()
-                    Spacer()
-                }
-            } else if attendanceFiles.isEmpty {
-                Text("No attendance files available")
-                    .foregroundColor(.gray)
-                    .font(.caption)
-            } else {
-                List {
-                    ForEach(attendanceFiles) { file in
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text(extractGroupName(from: file.name))
-                                    .font(.headline)
-
-                                Spacer()
-
-                                if loadingFiles.contains(file.name) {
-                                    ProgressView()
-                                        .scaleEffect(0.8)
-                                } else {
-                                    Text(
-                                        "\(attendanceCounts[file.name] ?? 0) attendees"
-                                    )
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                }
-                            }
-
-                            if let formattedDate = formatDate(
-                                from: file.name
-                            ) {
-                                Text(formattedDate)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 16)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color(.systemGray4), lineWidth: 1)
-                        )
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            loadAttendanceDetails(for: file)
-                        }
-                        .onAppear {
-                            loadAttendanceCount(for: file.name)
-                        }
-                        .listRowSeparator(.hidden)
-                    }
-                }
-                .frame(
-                    maxWidth: .infinity,
-                    maxHeight: .infinity,
-                    alignment: .leading
-                )
-                .listStyle(PlainListStyle())
-                .background(Color(.white))
-                .cornerRadius(10)
-                .padding(.vertical, 8)
-            }
-
-            if isDetailDataLoading {
-                HStack {
-                    Spacer()
-                    VStack {
-                        ProgressView()
-                        Text("Loading attendance data...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.top, 4)
-                    }
-                    Spacer()
-                }
-                .padding()
-            }
         }
     }
 

@@ -776,7 +776,7 @@ struct ComplexSurveyCommandView: View {
                 }
             }
 
-            Section(header: Text("Survey History").font(.headline)) {
+            Section(header: Text("Survey History")) {
                 if isFilesLoading {
                     HStack {
                         Spacer()
