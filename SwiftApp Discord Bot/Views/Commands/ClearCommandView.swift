@@ -49,23 +49,6 @@ struct ClearCommandView: View {
                             .labelsHidden()
                     }
 
-                    // Or with a more flexible number picker in a slider style
-                    VStack(alignment: .leading) {
-                        Text("Messages to delete: \(messageLimit)")
-                            .font(.caption)
-                        HStack {
-                            Text("1")
-                            Slider(
-                                value: Binding(
-                                    get: { Double(messageLimit) },
-                                    set: { messageLimit = Int($0) }
-                                ),
-                                in: 1...Double(maxLimit),
-                                step: 1
-                            )
-                            Text("\(maxLimit)")
-                        }
-                    }
 
                     // Warning text
                     Text(

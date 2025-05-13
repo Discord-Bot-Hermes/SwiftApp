@@ -26,7 +26,7 @@ struct CommandsView: View {
             CommandSection(title: "Member Commands") {
                 NavigationLink(destination: HelloCommandView(bot: bot)) {
                     CommandRow(
-                        title: "Hello",
+                        title: "Send Message",
                         description: "Send a personalized greeting",
                         systemImage: "message"
                     )

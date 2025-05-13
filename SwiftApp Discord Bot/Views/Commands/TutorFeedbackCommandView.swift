@@ -351,7 +351,10 @@ struct TutorFeedbackCommandView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Group")) {
+            Section(header: HStack(spacing: 0) {
+                                Text("Feedback Configuration")
+                                Text("*").foregroundColor(.red)
+                            }) {
                 if validGroups.isEmpty {
                     Text(
                         "No valid groups available. Please add groups in Settings."
