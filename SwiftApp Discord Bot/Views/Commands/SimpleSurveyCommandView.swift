@@ -550,9 +550,7 @@ struct SimpleSurveyCommandView: View {
                         .padding(.vertical, 5)
                     }
                 }
-            }
 
-            if !isLoading {
                 Section(header: Text("Survey History")) {
                     if isFilesLoading {
                         HStack {
@@ -595,7 +593,7 @@ struct SimpleSurveyCommandView: View {
                                             .foregroundColor(.secondary)
                                     }
                                 }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.vertical, 12)
                                 .padding(.horizontal, 16)
                                 .background(Color(.systemGray6))
@@ -617,8 +615,13 @@ struct SimpleSurveyCommandView: View {
                                 .listRowSeparator(.hidden)
                             }
                         }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                         .listStyle(PlainListStyle())
+                        .frame(maxWidth: .infinity, minHeight: 500)
+                        .frame(
+                            maxWidth: .infinity,
+                            maxHeight: .infinity,
+                            alignment: .leading
+                        )
                         .background(Color(.white))
                         .cornerRadius(10)
                         .padding(.vertical, 8)
@@ -640,8 +643,9 @@ struct SimpleSurveyCommandView: View {
                     }
                 }
                 .listRowInsets(
-                    EdgeInsets(top: 4, leading: 16, bottom: 0, trailing: 16)
+                    EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
                 )
+
             }
         }
         .listStyle(.insetGrouped)

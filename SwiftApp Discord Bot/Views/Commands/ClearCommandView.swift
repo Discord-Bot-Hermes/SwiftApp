@@ -1,9 +1,9 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ClearCommandView: View {
     @Bindable var bot: Bot
-    
+
     @State private var selectedChannelId: String?
     @State private var messageLimit = 1
     @State private var channels: [Channel] = []
@@ -12,10 +12,10 @@ struct ClearCommandView: View {
     @State private var errorMessage: String?
     @State private var successMessage: String?
     @State private var showFeedback = false
-    
+
     // Available message limits
     let maxLimit = 10
-    
+
     var body: some View {
         Form {
             Section(header: Text("Clear Command")) {
@@ -30,16 +30,17 @@ struct ClearCommandView: View {
                     Text("Delete messages from a Discord channel")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     // Channel selection
                     Picker("Channel", selection: $selectedChannelId) {
                         Text("Select a channel").tag(nil as String?)
-                        ForEach(channels.filter { $0.type == "text" }) { channel in
+                        ForEach(channels.filter { $0.type == "text" }) {
+                            channel in
                             Text(channel.name).tag(channel.id as String?)
                         }
                     }
                     .pickerStyle(MenuPickerStyle())
-                    
+
                     // Message limit selection with stepper
                     HStack {
                         Text("Number of Messages: \(messageLimit)")
@@ -47,27 +48,33 @@ struct ClearCommandView: View {
                         Stepper("", value: $messageLimit, in: 1...maxLimit)
                             .labelsHidden()
                     }
-                    
+
                     // Or with a more flexible number picker in a slider style
                     VStack(alignment: .leading) {
                         Text("Messages to delete: \(messageLimit)")
                             .font(.caption)
                         HStack {
                             Text("1")
-                            Slider(value: Binding(
-                                get: { Double(messageLimit) },
-                                set: { messageLimit = Int($0) }
-                            ), in: 1...Double(maxLimit), step: 1)
+                            Slider(
+                                value: Binding(
+                                    get: { Double(messageLimit) },
+                                    set: { messageLimit = Int($0) }
+                                ),
+                                in: 1...Double(maxLimit),
+                                step: 1
+                            )
                             Text("\(maxLimit)")
                         }
                     }
-                    
+
                     // Warning text
-                    Text("⚠️ This action cannot be undone. Messages will be permanently deleted.")
-                        .font(.caption)
-                        .foregroundColor(.orange)
-                        .padding(.top, 4)
-                    
+                    Text(
+                        "⚠️ This action cannot be undone. Messages will be permanently deleted."
+                    )
+                    .font(.caption)
+                    .foregroundColor(.orange)
+                    .padding(.top, 4)
+
                     // Clear button
                     Button(isClearing ? "Clearing..." : "Clear Messages") {
                         clearMessages()
@@ -78,7 +85,7 @@ struct ClearCommandView: View {
                     .foregroundColor(.red)
                 }
             }
-            
+
             if showFeedback {
                 if let success = successMessage {
                     HStack {
@@ -89,7 +96,7 @@ struct ClearCommandView: View {
                     }
                     .padding(.vertical, 5)
                 }
-                
+
                 if let error = errorMessage {
                     HStack {
                         Image(systemName: "exclamationmark.triangle.fill")
@@ -109,22 +116,24 @@ struct ClearCommandView: View {
             fetchChannels()
         }
     }
-    
+
     private func fetchChannels() {
         isLoading = true
         errorMessage = nil
         successMessage = nil
         showFeedback = false
-        
+
         Task {
             let result = await bot.apiClient.fetchChannels()
-            
+
             DispatchQueue.main.async {
                 isLoading = false
-                
+
                 switch result {
                 case .success(let fetchedChannels):
-                    self.channels = fetchedChannels.sorted { $0.position < $1.position }
+                    self.channels = fetchedChannels.sorted {
+                        $0.position < $1.position
+                    }
                 case .failure(let error):
                     self.errorMessage = "Failed to load channels: \(error)"
                     self.showFeedback = true
@@ -132,22 +141,25 @@ struct ClearCommandView: View {
             }
         }
     }
-    
+
     private func clearMessages() {
         guard let channelId = selectedChannelId else { return }
-        
+
         isClearing = true
         errorMessage = nil
         successMessage = nil
         showFeedback = false
-        
+
         Task {
-            let result = await bot.apiClient.clearMessages(channelId: channelId, limit: messageLimit)
-            
+            let result = await bot.apiClient.clearMessages(
+                channelId: channelId,
+                limit: messageLimit
+            )
+
             DispatchQueue.main.async {
                 isClearing = false
                 showFeedback = true
-                
+
                 switch result {
                 case .success(let message):
                     successMessage = message
@@ -161,8 +173,7 @@ struct ClearCommandView: View {
 
 #Preview {
     ClearCommandView(bot: SampleData.shared.bot)
-        .modelContainer(SampleData.shared.modelContainer
-    )
+        .modelContainer(
+            SampleData.shared.modelContainer
+        )
 }
-
-

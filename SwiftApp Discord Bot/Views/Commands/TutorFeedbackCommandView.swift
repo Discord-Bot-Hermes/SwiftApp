@@ -495,7 +495,11 @@ struct TutorFeedbackCommandView: View {
                                         .foregroundColor(.secondary)
                                 }
                             }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                            .frame(
+                                maxWidth: .infinity,
+                                maxHeight: .infinity,
+                                alignment: .leading
+                            )
                             .padding(.vertical, 12)
                             .padding(.horizontal, 16)
                             .background(Color(.systemGray6))
@@ -517,7 +521,12 @@ struct TutorFeedbackCommandView: View {
                             .listRowSeparator(.hidden)
                         }
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, minHeight: 500)
+                    .frame(
+                        maxWidth: .infinity,
+                        maxHeight: .infinity,
+                        alignment: .leading
+                    )
                     .listStyle(PlainListStyle())
                     .background(Color(.white))
                     .cornerRadius(10)
@@ -862,7 +871,7 @@ struct TutorFeedbackCommandView: View {
     private func extractGroupName(from filename: String) -> String {
         let components = filename.split(separator: "_")
         guard let groupName = components.first else { return filename }
-        return String(groupName) // Preserve original case
+        return String(groupName)  // Preserve original case
     }
 }
 

@@ -32,7 +32,7 @@ struct HelloCommandView: View {
                 } else {
                     TextField("Message", text: $message)
                         .autocorrectionDisabled(true)
-                    
+
                     Picker("Member", selection: $selectedMemberId) {
                         Text("Select a member").tag(nil as String?)
                         ForEach(members) { member in
@@ -40,7 +40,7 @@ struct HelloCommandView: View {
                         }
                     }
                     .pickerStyle(MenuPickerStyle())
-                    
+
                     // Send button
                     Button(isSending ? "Sending..." : "Send Greeting") {
                         sendHello()
@@ -61,7 +61,7 @@ struct HelloCommandView: View {
                 }
                 .padding(.vertical, 5)
             }
-            
+
             if let error = errorMessage {
                 HStack {
                     Text(error)
@@ -80,44 +80,49 @@ struct HelloCommandView: View {
             fetchMembers()
         }
     }
-    
+
     private func fetchMembers() {
         isLoading = true
         errorMessage = nil
-        
+
         Task {
             let result = await bot.apiClient.fetchMembers()
-            
+
             DispatchQueue.main.async {
                 isLoading = false
-                
+
                 switch result {
                 case .success(let fetchedMembers):
-                    self.members = fetchedMembers.sorted { $0.displayName < $1.displayName }
+                    self.members = fetchedMembers.sorted {
+                        $0.displayName < $1.displayName
+                    }
                 case .failure(let error):
                     self.errorMessage = "Failed to load members: \(error)"
                 }
             }
         }
     }
-    
+
     private func sendHello() {
         guard let memberId = selectedMemberId, !message.isEmpty else { return }
-        
+
         // Find the selected member name
         let selectedMember = members.first(where: { $0.id == memberId })
         let memberName = selectedMember?.displayName ?? "Unknown"
-        
+
         isSending = true
         isSuccess = false
         errorMessage = nil
-        
+
         Task {
-            let result = await bot.apiClient.sendHello(member: memberId, message: message)
-            
+            let result = await bot.apiClient.sendHello(
+                member: memberId,
+                message: message
+            )
+
             DispatchQueue.main.async {
                 isSending = false
-                
+
                 switch result {
                 case .success(let message):
                     isSuccess = true
@@ -125,7 +130,8 @@ struct HelloCommandView: View {
                 case .failure(let errorMsg):
                     isSuccess = false
                     // Format error message to include member name and ID
-                    errorMessage = "Failed to send message to \(memberName) (\(memberId)):\n\(errorMsg)"
+                    errorMessage =
+                        "Failed to send message to \(memberName) (\(memberId)):\n\(errorMsg)"
                 }
             }
         }
@@ -134,6 +140,7 @@ struct HelloCommandView: View {
 
 #Preview {
     HelloCommandView(bot: SampleData.shared.bot)
-        .modelContainer(SampleData.shared.modelContainer
-    )
+        .modelContainer(
+            SampleData.shared.modelContainer
+        )
 }

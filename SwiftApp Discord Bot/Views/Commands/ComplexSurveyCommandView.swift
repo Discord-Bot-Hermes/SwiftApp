@@ -53,7 +53,11 @@ struct ComplexSurveyDetailsView: View {
                             }
                         }
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                    .frame(
+                        maxWidth: .infinity,
+                        maxHeight: .infinity,
+                        alignment: .leading
+                    )
                     .listStyle(PlainListStyle())
                     .background(Color(.white))
                     .cornerRadius(10)
@@ -647,7 +651,7 @@ struct ComplexSurveyCommandView: View {
                     }
                     .pickerStyle(.menu)
                 }
-                
+
                 Section(header: Text("Questions")) {
                     Picker("Number of Questions", selection: $numberOfQuestions)
                     {
@@ -710,7 +714,7 @@ struct ComplexSurveyCommandView: View {
                         .padding(.vertical, 4)
                     }
                 }
-                
+
                 Section(header: Text("Survey Duration")) {
                     HStack {
                         Text("Duration: \(formattedDuration)")
@@ -770,91 +774,96 @@ struct ComplexSurveyCommandView: View {
                         .padding(.vertical, 5)
                     }
                 }
+            }
 
-                Section(header: Text("Survey History")) {
-                    if isFilesLoading {
+            Section(header: Text("Survey History").font(.headline)) {
+                if isFilesLoading {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .padding()
+                        Spacer()
+                    }
+                } else if complexSurveyFiles.isEmpty {
+                    Text("No complex survey files available")
+                        .foregroundColor(.gray)
+                        .font(.caption)
+                } else {
+                    List {
+                        ForEach(complexSurveyFiles) { file in
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(extractTopic(from: file.name))
+                                        .font(.headline)
+
+                                    Spacer()
+
+                                    if loadingFiles.contains(file.name) {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                    } else {
+                                        Text(
+                                            "\(surveyCounts[file.name] ?? 0) participants"
+                                        )
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    }
+                                }
+
+                                if let formattedDate = formatDate(
+                                    from: file.name
+                                ) {
+                                    Text(formattedDate)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(
+                                        Color(.systemGray4),
+                                        lineWidth: 1
+                                    )
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                loadSurveyDetails(for: file)
+                            }
+                            .onAppear {
+                                loadSurveyCount(for: file.name)
+                            }
+                            .listRowSeparator(.hidden)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 500)
+                    .frame(
+                        maxWidth: .infinity,
+                        maxHeight: .infinity,
+                        alignment: .leading
+                    )
+                    .listStyle(PlainListStyle())
+                    .background(Color(.white))
+                    .cornerRadius(10)
+                    .padding(.vertical, 8)
+
+                    if isDetailDataLoading {
                         HStack {
                             Spacer()
-                            ProgressView()
-                                .padding()
+                            VStack {
+                                ProgressView()
+                                Text("Loading survey data...")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .padding(.top, 4)
+                            }
                             Spacer()
                         }
-                    } else if complexSurveyFiles.isEmpty {
-                        Text("No complex survey files available")
-                            .foregroundColor(.gray)
-                            .font(.caption)
-                    } else {
-                        List {
-                            ForEach(complexSurveyFiles) { file in
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack {
-                                        Text(extractTopic(from: file.name))
-                                            .font(.headline)
-
-                                        Spacer()
-
-                                        if loadingFiles.contains(file.name) {
-                                            ProgressView()
-                                                .scaleEffect(0.8)
-                                        } else {
-                                            Text(
-                                                "\(surveyCounts[file.name] ?? 0) participants"
-                                            )
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                        }
-                                    }
-
-                                    if let formattedDate = formatDate(
-                                        from: file.name
-                                    ) {
-                                        Text(formattedDate)
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.vertical, 12)
-                                .padding(.horizontal, 16)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(8)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(
-                                            Color(.systemGray4),
-                                            lineWidth: 1
-                                        )
-                                )
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    loadSurveyDetails(for: file)
-                                }
-                                .onAppear {
-                                    loadSurveyCount(for: file.name)
-                                }
-                                .listRowSeparator(.hidden)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                        .listStyle(PlainListStyle())
-                        .background(Color(.white))
-                        .cornerRadius(10)
-                        .padding(.vertical, 8)
-
-                        if isDetailDataLoading {
-                            HStack {
-                                Spacer()
-                                VStack {
-                                    ProgressView()
-                                    Text("Loading survey data...")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .padding(.top, 4)
-                                }
-                                Spacer()
-                            }
-                            .padding()
-                        }
+                        .padding()
                     }
                 }
             }
@@ -888,6 +897,7 @@ struct ComplexSurveyCommandView: View {
         } message: {
             Text(validationMessage)
         }
+
     }
 
     private func fetchChannels() {
