@@ -352,10 +352,16 @@ struct AttendanceCommandView: View {
                 .presentationDragIndicator(.visible)
             }
         }
+        .onChange(of: selectedGroupId) { _ in
+            attendanceCode = selectedGroup?.attendanceCode ?? ""
+            attendanceStatus = selectedGroup?.attendanceActive ?? false
+        }
         .onAppear {
             // Initialize the group if there are valid groups available
             if let firstGroup = validGroups.first {
                 selectedGroupId = firstGroup.name
+                attendanceCode = firstGroup.attendanceCode ?? ""
+                attendanceStatus = firstGroup.attendanceActive
             } else {
                 errorMessage =
                     "No valid groups available. Please add groups in Settings."
@@ -375,6 +381,8 @@ struct AttendanceCommandView: View {
     }
 
     private func manageAttendance() {
+        // Remember code before API call
+        let currentCode = attendanceCode
         guard let groupId = selectedGroupId, let group = selectedGroup else {
             errorMessage = "Please select a group."
             showFeedback = true
@@ -386,7 +394,7 @@ struct AttendanceCommandView: View {
             showFeedback = true
             return
         }
-
+        // Validate that code is provided when starting
         guard !attendanceCode.isEmpty else {
             errorMessage = "Please enter an attendance code."
             showFeedback = true
@@ -414,7 +422,7 @@ struct AttendanceCommandView: View {
                 groupId: groupId,
                 targetUserId: memberId,
                 status: attendanceStatus,
-                code: attendanceCode
+                code: currentCode
             )
 
             DispatchQueue.main.async {
@@ -425,13 +433,12 @@ struct AttendanceCommandView: View {
                 case .success(let message):
                     successMessage = message
 
-                    // Update the group's attendance status
-                    updateGroupAttendanceStatus(
-                        group: group,
-                        isActive: attendanceStatus
-                    )
-
-                    // Clear the code if stopping attendance
+                    // Update the group's attendance status and code
+                    group.attendanceActive = attendanceStatus
+                    group.attendanceCode = attendanceStatus ? currentCode : nil
+                    try? context.save()
+                    
+                    // Clear local code if stopping attendance
                     if !attendanceStatus {
                         attendanceCode = ""
                     }
@@ -441,12 +448,6 @@ struct AttendanceCommandView: View {
                 }
             }
         }
-    }
-
-    private func updateGroupAttendanceStatus(group: GroupModel, isActive: Bool)
-    {
-        group.attendanceActive = isActive
-        try? context.save()
     }
 
     private func loadMembers() {

@@ -7,11 +7,13 @@ class GroupModel {
     var name: String
     var isValid: Bool
     var attendanceActive: Bool
+    var attendanceCode: String?  // store the current active attendance code
     
     init(name: String, isValid: Bool = false, attendanceActive: Bool = false) {
         self.name = name
         self.isValid = isValid
         self.attendanceActive = attendanceActive
+        self.attendanceCode = nil
     }
 }
 
