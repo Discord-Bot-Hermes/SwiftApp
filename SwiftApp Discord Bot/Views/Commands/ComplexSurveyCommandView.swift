@@ -630,27 +630,18 @@ struct ComplexSurveyCommandView: View {
     var body: some View {
         Form {
             if !isLoading {
-                Section(header: HStack(spacing: 0) {
-                    Text("Message")
-                    Text("*").foregroundColor(.red)
-                }) {
+                Section(header: RequiredSectionHeader(text: "Message")) {
                     TextEditor(text: $message)
                         .frame(minHeight: 100)
                         .autocapitalization(.none)
                 }
 
-                Section(header: HStack(spacing: 0) {
-                    Text("Main Topic")
-                    Text("*").foregroundColor(.red)
-                }) {
+                Section(header: RequiredSectionHeader(text: "Main Topic")) {
                     TextField("Enter the main topic", text: $mainTopic)
                         .autocapitalization(.none)
                 }
 
-                Section(header: HStack(spacing: 0) {
-                    Text("Channel")
-                    Text("*").foregroundColor(.red)
-                }) {
+                Section(header: RequiredSectionHeader(text: "Channel")) {
                     Picker("Select Channel", selection: $selectedChannelId) {
                         Text("Select a channel").tag(nil as String?)
                         ForEach(channels.filter { $0.type == "text" }) {
@@ -661,10 +652,7 @@ struct ComplexSurveyCommandView: View {
                     .pickerStyle(.menu)
                 }
 
-                Section(header: HStack(spacing: 0) {
-                    Text("Questions")
-                    Text("*").foregroundColor(.red)
-                }) {
+                Section(header: RequiredSectionHeader(text: "Questions")) {
                     Picker("Number of Questions", selection: $numberOfQuestions)
                     {
                         ForEach(questionOptions, id: \.self) { number in
@@ -909,7 +897,6 @@ struct ComplexSurveyCommandView: View {
         } message: {
             Text(validationMessage)
         }
-
     }
 
     private func fetchChannels() {

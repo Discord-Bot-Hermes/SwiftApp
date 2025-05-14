@@ -115,10 +115,7 @@ struct AttendanceCommandView: View {
     var body: some View {
         Form {
             if !isLoading {
-                Section(header: HStack(spacing: 0) {
-                    Text("Attendance Setup")
-                    Text("*").foregroundColor(.red)
-                }) {
+                Section(header: RequiredSectionHeader(text: "Attendance Setup")) {
                     if validGroups.isEmpty {
                         Text(
                             "No valid groups available. Please add groups in Settings."
@@ -186,10 +183,7 @@ struct AttendanceCommandView: View {
 
                         // New attendance code field
                         HStack {
-                            HStack(spacing: 0) {
-                                Text("Attendance Code")
-                                Text("*").foregroundColor(.red)
-                            }
+                            Text("Attendance Code").required()
                             Spacer()
                             TextField("Enter code", text: $attendanceCode)
                                 .keyboardType(.numberPad)

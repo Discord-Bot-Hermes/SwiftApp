@@ -436,10 +436,7 @@ struct SimpleSurveyCommandView: View {
     var body: some View {
         Form {
             if !isLoading {
-                Section(header: HStack(spacing: 0) {
-                    Text("Message")
-                    Text("*").foregroundColor(.red)
-                }) {
+                Section(header: RequiredSectionHeader(text: "Message")) {
                     TextEditor(text: $message)
                         .frame(minHeight: 100)
                         .autocapitalization(.none)
@@ -448,10 +445,7 @@ struct SimpleSurveyCommandView: View {
                     EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16)
                 )
 
-                Section(header: HStack(spacing: 0) {
-                    Text("Button Type")
-                    Text("*").foregroundColor(.red)
-                }) {
+                Section(header: RequiredSectionHeader(text: "Button Type")) {
                     Picker("Button", selection: $selectedButtonType) {
                         Text("Select Button type").tag("")
                         ForEach(buttonTypes, id: \.self) { type in
@@ -478,10 +472,7 @@ struct SimpleSurveyCommandView: View {
                     }
                 }
 
-                Section(header: HStack(spacing: 0) {
-                    Text("Main Topic")
-                    Text("*").foregroundColor(.red)
-                }) {
+                Section(header: RequiredSectionHeader(text: "Main Topic")) {
                     TextField("Enter the main topic", text: $mainTopic)
                         .autocapitalization(.none)
                 }
@@ -489,10 +480,7 @@ struct SimpleSurveyCommandView: View {
                     EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16)
                 )
 
-                Section(header: HStack(spacing: 0) {
-                    Text("Channel")
-                    Text("*").foregroundColor(.red)
-                }) {
+                Section(header: RequiredSectionHeader(text: "Channel")) {
                     Picker("Channel", selection: $selectedChannelId) {
                         Text("Select a channel").tag(nil as String?)
                         ForEach(channels.filter { $0.type == "text" }) {

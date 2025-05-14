@@ -21,7 +21,9 @@ struct HelloCommandView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Send Command")) {
+            Section(
+                header: RequiredSectionHeader(text: "Message Command")
+            ) {
                 if isLoading {
                     HStack {
                         Spacer()
@@ -32,8 +34,7 @@ struct HelloCommandView: View {
                 } else {
                     TextField("Message", text: $message)
                         .autocorrectionDisabled(true)
-
-                    Picker("Member", selection: $selectedMemberId) {
+                    RequiredPicker(title: "Member", selection: $selectedMemberId) {
                         Text("Select a member").tag(nil as String?)
                         ForEach(members) { member in
                             Text(member.displayName).tag(member.id as String?)
@@ -72,7 +73,7 @@ struct HelloCommandView: View {
                 .padding(.vertical, 5)
             }
         }
-        .navigationTitle("Hello Command")
+        .navigationTitle("Message Command")
         .onAppear {
             fetchMembers()
         }

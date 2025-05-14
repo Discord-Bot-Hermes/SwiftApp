@@ -30,23 +30,18 @@ struct GiveRoleCommandView: View {
                         .foregroundColor(.secondary)
 
                     // Member selection
-                    Picker(selection: $selectedMemberId) {
+                    RequiredPicker(title: "Member", selection: $selectedMemberId) {
                         Text("Select a member").tag(nil as String?)
                         ForEach(members) { member in
                             Text("\(member.displayName) (\(member.name))").tag(
                                 member.id as String?
                             )
                         }
-                    } label: {
-                        HStack(spacing: 0) {
-                            Text("Member")
-                            Text("*").foregroundColor(.red)
-                        }
                     }
                     .pickerStyle(MenuPickerStyle())
 
                     // Role selection
-                    Picker(selection: $selectedRoleId) {
+                    RequiredPicker(title: "Role", selection: $selectedRoleId) {
                         Text("Select a role").tag(nil as String?)
                         ForEach(roles) { role in
                             HStack {
@@ -55,11 +50,6 @@ struct GiveRoleCommandView: View {
                                 Text(role.name)
                             }
                             .tag(role.id as String?)
-                        }
-                    } label: {
-                        HStack(spacing: 0) {
-                            Text("Role")
-                            Text("*").foregroundColor(.red)
                         }
                     }
                     .pickerStyle(MenuPickerStyle())
